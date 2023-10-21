@@ -25,19 +25,19 @@ const socket = io("localhost:5000/", {
   return (
     <div className="featured mb-4">
         <div className="featuredItem bg-white hover:scale-105 hover:transition-all">
-            <span className="featuredTitle">Temperature</span>
+            <span className="featuredTitle text-blue-400">Temperature</span>
             <div className="featuredTemperatureContainer">
                 <span className="featuredTemperature">{data.temp || '_'} °C</span>
             </div>
         </div>
         <div className="featuredItem bg-white hover:scale-105 hover:transition-all">
-            <span className="featuredTitle">Humidity</span>
+            <span className="featuredTitle text-blue-400">Humidity</span>
             <div className="featuredTemperatureContainer">
                 <span className="featuredTemperature">{data.hum || '_'}%</span>
             </div>
         </div>
         <div className="featuredItem bg-white hover:scale-105 hover:transition-all">
-            <span className="featuredTitle">Soil Measure</span>
+            <span className="featuredTitle text-blue-400">Soil Measure</span>
             <div className="featuredTemperatureContainer">
                 <span className="featuredTemperature">{data.adc_val || '_'}%</span>
         

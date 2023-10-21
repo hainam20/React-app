@@ -12,8 +12,7 @@
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 .featuredTitle{
-    font-size: 30px;
-    color: blue;
+    font-size: 26px;
 }
 .fearturedTemperatureContainer{
     margin: 10px 0;
@@ -21,7 +20,7 @@
     align-items: center;
 }
 .featuredTemperature{
-    font-size: 30px;
+    font-size: 26px;
     font-weight: 600;
 }
 
