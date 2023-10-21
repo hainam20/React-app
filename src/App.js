@@ -8,10 +8,12 @@ function App() {
   return (
     <div>
       <Topbar />
-      <div className="container">
+      <div className="flex">
         <Sidebar />
-        <Home />
-        <Control />
+        <div className="flex w-full">
+          <Home />
+          <Control />
+        </div>
       </div>
     </div>
   );

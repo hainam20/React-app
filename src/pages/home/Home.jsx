@@ -6,7 +6,7 @@ import Chart from '../../components/chart/Chart'
 
 export default function Home() {
   return (
-    <div className='home'>
+    <div className='home p-3 bg-[rgb(245,246,250)]'>
         <FeaturedInfo/>
         <FeaturedInfo/>
         <FeaturedInfo/>

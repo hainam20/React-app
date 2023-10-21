@@ -6,7 +6,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 
 export default function Topbar() {
   return (
-    <div className="topbar">
+    <div className="topba border-b">
         <div className="topbarWrapper">
             <div className="topLeft">
               <span className="logo">ADMIN</span>

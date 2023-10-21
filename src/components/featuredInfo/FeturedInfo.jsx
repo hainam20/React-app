@@ -23,23 +23,23 @@ const socket = io("localhost:5000/", {
         };
         }, []);
   return (
-    <div className="featured">
-        <div className="featuredItem">
+    <div className="featured mb-4">
+        <div className="featuredItem bg-white hover:scale-105 hover:transition-all">
             <span className="featuredTitle">Temperature</span>
             <div className="featuredTemperatureContainer">
-                <span className="featuredTemperature">{data.temp} °C</span>
+                <span className="featuredTemperature">{data.temp || '_'} °C</span>
             </div>
         </div>
-        <div className="featuredItem">
+        <div className="featuredItem bg-white hover:scale-105 hover:transition-all">
             <span className="featuredTitle">Humidity</span>
             <div className="featuredTemperatureContainer">
-                <span className="featuredTemperature">{data.hum}%</span>
+                <span className="featuredTemperature">{data.hum || '_'}%</span>
             </div>
         </div>
-        <div className="featuredItem">
+        <div className="featuredItem bg-white hover:scale-105 hover:transition-all">
             <span className="featuredTitle">Soil Measure</span>
             <div className="featuredTemperatureContainer">
-                <span className="featuredTemperature">{data.adc_val}%</span>
+                <span className="featuredTemperature">{data.adc_val || '_'}%</span>
         
             </div>
         </div>
