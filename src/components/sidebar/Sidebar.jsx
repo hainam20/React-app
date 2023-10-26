@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 
 import HomeIcon from '@mui/icons-material/Home';
 import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 
-import "./sidebar.css"
+import "./sidebar.css";
 
 export default function Sidebar() {
 
@@ -34,5 +34,5 @@ export default function Sidebar() {
             </div>
         </div>
     </div>
-  )
-}
+  );
+};
