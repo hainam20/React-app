@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 
 import Device from '../../components/device';
-import FeaturedInfo from "../../components/featuredInfo/FeturedInfo";
 import Chart from '../../components/chart/Chart';
 import OverlayBlock from '../../components/OverlayBlock';
+import Control from '../../components/control/Control';
 
 import "./home.css";
 
@@ -68,15 +68,18 @@ export default function Home() {
     };
 
     return (
-        <div className='home bg-[rgb(245,246,250)]'>
-            <div className='h-full overflow-y-auto no-scrollbar p-5'>
+        <div className='home bg-[rgb(245,246,250)] w-full h-full flex'>
+            <div className='h-full overflow-y-auto no-scrollbar p-5 w-[50%]'>
                 {testData?.map((item, index) => {
                     return (
-                        <div className="mb-3" key={index} onClick={handleVisibleChart}>
-                            <Device data={item} />
+                        <div className="mb-3 device" key={index}>
+                            <Device data={item} handleVisibleChart={handleVisibleChart}/>
                         </div>
                     )
                 })}
+            </div>
+            <div className='w-[50%] h-full p-5'>
+                <Control />
             </div>
             {state.isVisibleChart && (
                 <OverlayBlock>

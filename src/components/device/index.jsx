@@ -7,10 +7,13 @@ import { ReactComponent as IconSoil } from '../../assets/iconSoil.svg';
 
 const Device = (props) => {
 
-    const { data } = props;
+    const { data, handleVisibleChart } = props;
 
     return (
-        <div className="w-[400px] h-[200px] bg-white rounded-lg shadow-xl p-3 relative flex cursor-pointer hover:scale-105 hover:transition-all">
+        <div 
+            className="w-full h-[200px] bg-white rounded-lg shadow-xl p-3 relative flex cursor-pointer hover:scale-105 hover:transition-all"
+            onClick={handleVisibleChart}
+        >
             <div className="w-[50%]">
                 <div className={`${data?.status ? 'bg-green-400' : 'bg-red-400'} absolute right-3 top-3 w-2 h-2 rounded-full`}></div>
                 <IconDevice />
