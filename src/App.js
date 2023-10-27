@@ -7,13 +7,13 @@ import "./index.css";
 
 function App() {
     return (
-        <div>
+        <div className="!h-screen">
             <Topbar />
-            <div className="flex">
+            <div className="flex h-full content-container">
                 <Sidebar />
-                <div className="flex w-full">
+                <div className="flex w-full h-full">
                     <Home />
-                    <Control />
+                    {/* <Control /> */}
                 </div>
             </div>
         </div>
