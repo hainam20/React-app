@@ -1,10 +1,42 @@
 import React, { useState } from 'react';
 
 import { ReactComponent as IconControl } from '../../assets/iconControl.svg';
-import { Switch, DatePicker, Space, Empty } from 'antd';
+import { Switch, DatePicker, Space, Empty, Table } from 'antd';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons'
 
 import "./Control.css";
+
+const columns = [
+    {
+        title: 'Time',
+        dataIndex: 'time',
+        key: 'time',
+        render: (text) => <a>{text}</a>,
+    },
+    {
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status',
+    },
+];
+
+const tableData = [
+    {
+      key: '1',
+      time: '2038-01-19 03:14:07',
+      status: 'on',
+    },
+    {
+      key: '2',
+      time: '2100-12-31 23:59:59',
+      status: 'off',
+    },
+    {
+      key: '3',
+      time: '275760-09-13 00:00:00',
+      status: 'on',
+    },
+];
 
 const Control = (props) => {
 
@@ -58,8 +90,14 @@ const Control = (props) => {
             </div>
             <div className='w-full flex flex-col'>
                 <div className='mb-4'>History: </div>
-                <div className='w-full flex justify-center'>
-                    <Empty />
+                <div className='w-full flex'>
+                    {/* <Empty /> */}
+                    <Table 
+                        dataSource={tableData} 
+                        columns={columns} 
+                        pagination={false}
+                        className='w-full'
+                    />
                 </div>
             </div>
         </div>
