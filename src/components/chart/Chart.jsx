@@ -57,11 +57,11 @@ const testChartData = [
       Humidity: 4300,
       Soil: 1345,
     },
-  ];
+];
 
 export default function Chart(props) {
 
-    const { handleCloseChart } = props;
+    const { handleCloseChart, data } = props;
 
     const [chartData, setChartData] = useState([]);
     const MAX_DATA_POINTS = 20;
@@ -89,6 +89,8 @@ export default function Chart(props) {
         };
 
     }, []);
+
+    console.log(data);
     
     return (
         <div className="chart bg-white rounded-md w-[600px] h-[400px] relative">
@@ -113,7 +115,7 @@ export default function Chart(props) {
                 <LineChart
                     width={500}
                     height={300}
-                    data={testChartData}
+                    data={data}
                     margin={{
                         top: 5,
                         right: 30,

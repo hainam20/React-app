@@ -1,5 +1,8 @@
 import React from "react";
 
+import { Button } from 'antd';
+import { FolderOpenOutlined } from '@ant-design/icons';
+
 import { ReactComponent as IconDevice } from '../../assets/iconDevice.svg';
 import { ReactComponent as IconTemparature } from '../../assets/iconTemparature.svg';
 import { ReactComponent as IconHumidity } from '../../assets/iconHumidity.svg';
@@ -10,14 +13,20 @@ const Device = (props) => {
     const { data, handleVisibleChart } = props;
 
     return (
-        <div 
-            className="w-full h-[200px] bg-white rounded-lg shadow-xl p-3 relative flex cursor-pointer hover:scale-105 hover:transition-all"
-            onClick={handleVisibleChart}
-        >
+        <div className="w-full h-[200px] bg-white rounded-lg shadow-xl p-3 relative flex cursor-pointer hover:scale-105 hover:transition-all">
             <div className="w-[50%]">
                 <div className={`${data?.status ? 'bg-green-400' : 'bg-red-400'} absolute right-3 top-3 w-2 h-2 rounded-full`}></div>
                 <IconDevice />
-                <div className="text-base font-normal tracking-widest">{data?.name}</div>
+                <div className="text-base font-normal tracking-widest mb-3">{data?.name}</div>
+                <div className="">
+                    <Button 
+                        type="primary" 
+                        icon={<FolderOpenOutlined />}
+                        onClick={() => handleVisibleChart(data?.chart)}
+                    > 
+                        Open chart
+                    </Button>
+                </div>
             </div>
             <div className="w-[50%] flex flex-col justify-center">
                 <div className="text-sm flex items-center mb-3 w-full">
