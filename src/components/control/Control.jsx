@@ -20,25 +20,9 @@ const columns = [
     },
 ];
 
-const tableData = [
-    {
-      key: '1',
-      time: '2038-01-19 03:14:07',
-      status: 'on',
-    },
-    {
-      key: '2',
-      time: '2100-12-31 23:59:59',
-      status: 'off',
-    },
-    {
-      key: '3',
-      time: '275760-09-13 00:00:00',
-      status: 'on',
-    },
-];
-
 const Control = (props) => {
+
+    const { data } = props;
 
     const { RangePicker } = DatePicker;
 
@@ -61,14 +45,20 @@ const Control = (props) => {
 
     return (
         <div className='bg-white w-full h-full p-3 rounded-md shadow-xl relative'>
-            <div className='w-full flex items-center mb-3'>
-                <IconControl className='mr-4'/>
-                <div className='text-lg font-semibold'>Control</div>
+            <div className='w-full flex justify-between items-center mb-3'>
+                <div className=''>
+                    <IconControl className='mr-4'/>
+                    <div className='text-lg font-semibold'>Control</div>
+                </div>
+                <div className='text-lg font-bold tracking-widest text-green-400'>
+                    {data?.name}
+                </div>
             </div>
             <div className='w-full flex items-center mb-3'>
                 <div className='text-md font-normal mr-4'>Status: </div>
                 <div className=''>
                     <Switch
+                        checked={data?.status}
                         checkedChildren={<CheckOutlined />}
                         unCheckedChildren={<CloseOutlined />}
                         onChange={(event) => handleChangeStatus(event)}
@@ -85,6 +75,7 @@ const Control = (props) => {
                         format="YYYY-MM-DD HH:mm"
                         onChange={onChangeTime}
                         onOk={onOk}
+                        defaultValue={data?.time}
                     />
                 </Space>
             </div>
@@ -93,7 +84,7 @@ const Control = (props) => {
                 <div className='w-full flex'>
                     {/* <Empty /> */}
                     <Table 
-                        dataSource={tableData} 
+                        dataSource={data?.history} 
                         columns={columns} 
                         pagination={false}
                         className='w-full'
