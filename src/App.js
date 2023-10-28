@@ -6,12 +6,14 @@ import Control from "./components/control/Control";
 
 function App() {
   return (
-    <div>
+    <div className="!h-screen">
       <Topbar />
-      <div className="container">
+      <div className="flex h-full content-container">
         <Sidebar />
-        <Home />
-        <Control />
+        <div className="flex w-full h-full">
+          <Home />
+          {/* <Control /> */}
+        </div>
       </div>
     </div>
   );
