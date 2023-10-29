@@ -48,6 +48,7 @@ const Control = (props) => {
     };
 
     const handleSwitch = (event) => {
+        setState(prev => ({...prev, isChecked: event}));
         console.log(event); 
     };
 
