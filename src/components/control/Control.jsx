@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { ReactComponent as IconControl } from '../../assets/iconControl.svg';
 import { Switch, DatePicker, Space, Empty, Table } from 'antd';
@@ -27,8 +27,12 @@ const Control = (props) => {
     const { RangePicker } = DatePicker;
 
     const [state, setState] = useState({
-        isChecked: false,
+        isChecked: data?.status,
     });
+
+    useEffect(() => {
+        setState(prev => ({...prev, isChecked: data?.status}));
+    },[data]);
 
     const handleChangeStatus = (event) => {
         setState(prev => ({...prev, isChecked: event}));
@@ -41,6 +45,10 @@ const Control = (props) => {
 
     const onOk = (value) => {
         console.log('onOk: ', value);
+    };
+
+    const handleSwitch = (event) => {
+        console.log(event); 
     };
 
     return (
@@ -58,10 +66,11 @@ const Control = (props) => {
                 <div className='text-md font-normal mr-4'>Status: </div>
                 <div className=''>
                     <Switch
-                        checked={data?.status}
+                        checked={state.isChecked}
                         checkedChildren={<CheckOutlined />}
                         unCheckedChildren={<CloseOutlined />}
                         onChange={(event) => handleChangeStatus(event)}
+                        onClick={(event) => handleSwitch(event)}
                     />
                 </div>
             </div>
