@@ -39,10 +39,12 @@ const Control = (props) => {
     const { RangePicker } = DatePicker;
 
     const [state, setState] = useState({
-        isChecked: false,
+        isChecked: data?.status,
     });
-
-    
+// New Update
+    useEffect(() => {
+        setState(prev => ({...prev, isChecked: data?.status}));
+    },[data]);
 
     const handleChangeStatus = (event) => {
         socket.emit('status_Relay', event);
@@ -56,6 +58,11 @@ const Control = (props) => {
 
     const onOk = (value) => {
         console.log('onOk: ', value);
+    };
+
+    const handleSwitch = (event) => {
+        setState(prev => ({...prev, isChecked: event}));
+        console.log(event); 
     };
 
     return (
@@ -73,10 +80,11 @@ const Control = (props) => {
                 <div className='text-md font-normal mr-4'>Status: </div>
                 <div className=''>
                     <Switch
-                        checked={data?.status}
+                        checked={state.isChecked}
                         checkedChildren={<CheckOutlined />}
                         unCheckedChildren={<CloseOutlined />}
                         onChange={(event) => handleChangeStatus(event)}
+                        onClick={(event) => handleSwitch(event)}
                     />
                 </div>
             </div>
