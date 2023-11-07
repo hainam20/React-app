@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 
 import { Button } from 'antd';
 import { FolderOpenOutlined } from '@ant-design/icons';
@@ -8,16 +8,20 @@ import { ReactComponent as IconTemparature } from '../../assets/iconTemparature.
 import { ReactComponent as IconHumidity } from '../../assets/iconHumidity.svg';
 import { ReactComponent as IconSoil } from '../../assets/iconSoil.svg';
 
+
+
 const Device = (props) => {
 
     const { data, handleVisibleChart } = props;
+
+    console.log(data);
 
     return (
         <div className="w-full h-[200px] bg-white rounded-lg shadow-xl p-3 relative flex cursor-pointer hover:scale-105 hover:transition-all">
             <div className="w-[50%]">
                 <div className={`${data?.status ? 'bg-green-400' : 'bg-red-400'} absolute right-3 top-3 w-2 h-2 rounded-full`}></div>
                 <IconDevice />
-                <div className="text-base font-normal tracking-widest mb-3">{data?.name}</div>
+                <div className="text-base font-normal tracking-widest mb-3">Device {data?.ID}</div>
                 <div className="">
                     <Button 
                         type="primary" 
@@ -35,7 +39,7 @@ const Device = (props) => {
                         <div className="">Temparature</div>
                     </div>
                     <div className="w-[50%] flex items-center justify-center text-lg">
-                        {`${data?.temparature}°`}
+                        {`${data?.temp}°`}
                     </div>
                 </div>
                 <div className="text-sm flex items-center mb-3 w-full">
@@ -44,7 +48,7 @@ const Device = (props) => {
                         <div className="">Humidity</div>
                     </div>
                     <div className="w-[50%] flex items-center justify-center text-lg">
-                        {`${data?.humidity}%`}
+                        {`${data?.hum}%`}
                     </div>
                 </div>
                 <div className="text-sm flex items-center mb-3 w-full">
@@ -53,7 +57,7 @@ const Device = (props) => {
                         <div className="">Soil Measure</div>
                     </div>
                     <div className="w-[50%] flex items-center justify-center text-lg">
-                        {`${data?.soil}%`}
+                        {`${data?.adc_val}%`}
                     </div>
                 </div>
             </div>

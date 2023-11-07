@@ -1,10 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import io from 'socket.io-client'
 
 import { ReactComponent as IconControl } from '../../assets/iconControl.svg';
 import { Switch, DatePicker, Space, Empty, Table } from 'antd';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons'
 
 import "./Control.css";
+
+
+
+const socket = io("localhost:5000/", {
+    transports: ["websocket"],
+    cors: {
+      origin: "http://localhost:3000/",
+    },
+});
+
+
 
 const columns = [
     {
@@ -30,7 +42,10 @@ const Control = (props) => {
         isChecked: false,
     });
 
+    
+
     const handleChangeStatus = (event) => {
+        socket.emit('status_Relay', event);
         setState(prev => ({...prev, isChecked: event}));
     };
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import io from 'socket.io-client'
 
 import Device from '../../components/device';
 import Chart from '../../components/chart/Chart';
@@ -10,9 +11,18 @@ import dayjs from 'dayjs';
 import "./home.css";
 
 
+
+const socket = io("localhost:5000/", {
+    transports: ["websocket"],
+    cors: {
+      origin: "http://localhost:3000/",
+    },
+  });
+
+
 export default function Home() {
 
-    const testData = [
+   /* const testData = [
         {
             "name": "Device 1",
             "temparature": 18,
@@ -146,8 +156,29 @@ export default function Home() {
                 { name: 'day 7', Temparature: 16, Humidity: 76, Soil: 42 },
             ]
         },
-    ];
+    ];*/
 
+    /**
+     * Socket.io
+     */
+    const [testData, setData] = useState([]);
+
+    useEffect(() => {
+        socket.on("connect", () => {
+            console.log('Socket Connect:', socket.connected);
+        });
+        socket.on('mqtt_data', (testData) => {
+            console.log('Received new data:', testData);
+            setData(testData);
+        });
+        return () => {
+            socket.off();
+        };
+    }, []);
+
+    /**
+     * 
+     */
     const [state, setState] = useState({
         isVisibleChart: false,
         controlData: {},
@@ -164,26 +195,26 @@ export default function Home() {
     };
 
     const handleControlData = (data) => {
-        const { status, timer, history, name } = data;
+        // const { status, timer, history, name } = data;
 
-        const time = [
-            dayjs(timer?.[0]),
-            dayjs(timer?.[1]),
-        ];
+        // const time = [
+        //     dayjs(timer?.[0]),
+        //     dayjs(timer?.[1]),
+        // ];
 
-        const controlData = {
-            name,
-            status,
-            time,
-            history,
-        };
+        // const controlData = {
+        //     name,
+        //     status,
+        //     time,
+        //     history,
+        // };
 
-        setState(prev => ({...prev, controlData: controlData}));
+        // setState(prev => ({...prev, controlData: controlData}));
     };
 
-    useEffect(() => {
-        handleControlData(testData[0]);
-    },[])
+    // useEffect(() => {
+    //     handleControlData(testData[0]);
+    // },[]);
 
     return (
         <div className='home bg-[rgb(245,246,250)] w-full h-full flex'>

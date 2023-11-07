@@ -8,11 +8,13 @@ const socket = io("localhost:5000/", {
       origin: "http://localhost:3000/",
     },
   });
-    export default function FeturedInfo() {
+  console.log('check 1', socket.connected);
+
+export default function FeturedInfo() {
     const [data, setData] = useState([])
     useEffect(() => {
         socket.on("connect", () => {
-            console.log('Connected to Flask server');
+            console.log('check 2', socket.connected);
         });
         socket.on('mqtt_data', (data) => {
             console.log('Received new data:', data);
