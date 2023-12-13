@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client'
 
+import Relay from './Relay';
+import ModalInfo from './ModalInfo';
+
 import { ReactComponent as IconControl } from '../../assets/iconControl.svg';
-import { Switch, DatePicker, Space, Empty, Table } from 'antd';
-import { CheckOutlined, CloseOutlined } from '@ant-design/icons'
+import { Table } from 'antd';
 
 import "./Control.css";
-
-
 
 const socket = io("localhost:5000/", {
     transports: ["websocket"],
@@ -15,8 +15,6 @@ const socket = io("localhost:5000/", {
       origin: "http://localhost:3000/",
     },
 });
-
-
 
 const columns = [
     {
@@ -32,14 +30,19 @@ const columns = [
     },
 ];
 
+const relayData = [
+    { title: 'Relay 1', status: true },
+    { title: 'Relay 2', status: true },
+    { title: 'Relay 3', status: false },
+];
+
 const Control = (props) => {
 
     const { data } = props;
 
-    const { RangePicker } = DatePicker;
-
     const [state, setState] = useState({
         isChecked: data?.status,
+        isShowModalInfo: false,
     });
 // New Update
     useEffect(() => {
@@ -51,70 +54,47 @@ const Control = (props) => {
         setState(prev => ({...prev, isChecked: event}));
     };
 
-    const onChangeTime = (value, dateString) => {
-        console.log('Selected Time: ', value);
-        console.log('Formatted Selected Time: ', dateString);
-    };
-
-    const onOk = (value) => {
-        console.log('onOk: ', value);
-    };
-
-    const handleSwitch = (event) => {
-        setState(prev => ({...prev, isChecked: event}));
-        console.log(event); 
+    const handleModalInfo = () => {
+        setState(prev => ({...prev, isShowModalInfo: !prev.isShowModalInfo}));
     };
 
     return (
-        <div className='bg-white w-full h-full p-3 rounded-md shadow-xl relative'>
-            <div className='w-full flex justify-between items-center mb-3'>
-                <div className=''>
-                    <IconControl className='mr-4'/>
-                    <div className='text-lg font-semibold'>Control</div>
+        <>
+            <div className='bg-white w-full h-full p-3 rounded-md shadow-xl relative overflow-y-auto'>
+                <div className='w-full flex justify-between items-center mb-3'>
+                    <div className='flex items-center'>
+                        <IconControl className='mr-4'/>
+                        <div className='text-lg font-semibold text-[rgb(23,24,59)]'>Control</div>
+                    </div>
+                    <div className='text-lg font-bold tracking-widest text-green-400'>
+                        {data?.name}
+                    </div>
                 </div>
-                <div className='text-lg font-bold tracking-widest text-green-400'>
-                    {data?.name}
-                </div>
-            </div>
-            <div className='w-full flex items-center mb-3'>
-                <div className='text-md font-normal mr-4'>Status: </div>
-                <div className=''>
-                    <Switch
-                        checked={state.isChecked}
-                        checkedChildren={<CheckOutlined />}
-                        unCheckedChildren={<CloseOutlined />}
-                        onChange={(event) => handleChangeStatus(event)}
-                        onClick={(event) => handleSwitch(event)}
-                    />
-                </div>
-            </div>
-            <div className='w-full flex items-center mb-4'>
-                <div className='mr-3 text-md'>Timer: </div>
-                <Space direction="vertical" size={12}>
-                    <RangePicker
-                        showTime={{
-                            format: 'HH:mm',
-                        }}
-                        format="YYYY-MM-DD HH:mm"
-                        onChange={onChangeTime}
-                        onOk={onOk}
-                        defaultValue={data?.time}
-                    />
-                </Space>
-            </div>
-            <div className='w-full flex flex-col'>
-                <div className='mb-4'>History: </div>
-                <div className='w-full flex'>
-                    {/* <Empty /> */}
-                    <Table 
-                        dataSource={data?.history} 
-                        columns={columns} 
-                        pagination={false}
-                        className='w-full'
-                    />
+
+                {relayData.map((item, index) => {
+                    return (
+                        <div className='py-1 px-4' key={`relay-${index}`}>
+                            <Relay data={item} handleModalInfo={handleModalInfo} />
+                        </div>
+                    )
+                })}
+                <div className='w-full flex flex-col mt-4'>
+                    {/* <div className='mb-4'>History: </div> */}
+                    <div className='w-full flex'>
+                        {/* <Empty /> */}
+                        <Table 
+                            dataSource={data?.history} 
+                            columns={columns} 
+                            pagination={false}
+                            className='w-full'
+                        />
+                    </div>
                 </div>
             </div>
-        </div>
+            {state.isShowModalInfo && (
+                <ModalInfo handleModalInfo={handleModalInfo}/>
+            )}
+        </>
     );
 };
 
