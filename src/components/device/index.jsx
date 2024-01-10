@@ -12,21 +12,18 @@ import { ReactComponent as IconSoil } from '../../assets/iconSoil.svg';
 
 const Device = (props) => {
 
-    const { data, handleVisibleChart } = props;
-
-    console.log(data);
+    const { data, handleVisibleChart, index } = props;
 
     return (
         <div className="w-full h-[200px] bg-white rounded-lg shadow-xl p-3 relative flex cursor-pointer hover:scale-105 hover:transition-all">
             <div className="w-[50%]">
-                <div className={`${data?.status ? 'bg-green-400' : 'bg-red-400'} absolute right-3 top-3 w-2 h-2 rounded-full`}></div>
                 <IconDevice />
                 <div className="text-base font-normal tracking-widest mb-3">Device {data?.ID}</div>
                 <div className="">
                     <Button 
                         type="primary" 
                         icon={<FolderOpenOutlined />}
-                        onClick={() => handleVisibleChart(data?.chart)}
+                        onClick={() => handleVisibleChart(data?.chart, index)}
                     > 
                         Open chart
                     </Button>

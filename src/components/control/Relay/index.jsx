@@ -3,23 +3,23 @@ import React, { useEffect, useState } from "react";
 import { ReactComponent as IconDevice } from '../../../assets/iconDevice.svg';
 
 
+
 const Relay = (props) => {
 
-    const { data, handleModalInfo } = props;
-
+    const { data, handleModalInfo, handleChangeStatus, index } = props;
     const [state, setState] = useState({
         status: data.status,
     });
-
     useEffect(() => {
         if (data) {
             setState(prev => ({...prev, status: data.status}));
+            
         }
     },[data]);
 
     return (
         <div
-            onClick={handleModalInfo}
+            onClick={()=> handleModalInfo(index)}
             className="w-full h-[90px] bg-[rgb(82,127,244)] opacity-100 hover:opacity-80 transition-opacity duration-300 rounded-xl flex items-center cursor-pointer justify-between px-4"
         >
             <div className="flex items-center h-full">
@@ -35,7 +35,7 @@ const Relay = (props) => {
                         type="checkbox" 
                         value={true}
                         defaultChecked={state.status}
-                        onChange={() => setState(prev => ({...prev, status: !prev.status}))} 
+                        onChange={handleChangeStatus} 
                         class="sr-only peer"
                     />
 

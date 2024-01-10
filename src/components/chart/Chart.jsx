@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { format } from 'date-fns';
+
 
 import { ReactComponent as IconClose } from '../../assets/iconClose.svg';
 
@@ -12,59 +12,29 @@ const socket = io("localhost:5000/", {
     cors: {
         origin: "http://localhost:3000/",
     },
-});
-
-const testChartData = [
-    {
-      name: 'Page A',
-      Temparature: 4000,
-      Humidity: 2400,
-      Soil: 1400,
-    },
-    {
-      name: 'Page B',
-      Temparature: 3000,
-      Humidity: 1398,
-      Soil: 1200,
-    },
-    {
-      name: 'Page C',
-      Temparature: 2000,
-      Humidity: 9800,
-      Soil: 1230,
-    },
-    {
-      name: 'Page D',
-      Temparature: 2780,
-      Humidity: 3908,
-      Soil: 1450,
-    },
-    {
-      name: 'Page E',
-      Temparature: 1890,
-      Humidity: 4800,
-      Soil: 1560,
-    },
-    {
-      name: 'Page F',
-      Temparature: 2390,
-      Humidity: 3800,
-      Soil: 1120,
-    },
-    {
-      name: 'Page G',
-      Temparature: 3490,
-      Humidity: 4300,
-      Soil: 1345,
-    },
-];
+})
 
 export default function Chart(props) {
 
     const { handleCloseChart, data } = props;
-
     const [chartData, setChartData] = useState([]);
     const MAX_DATA_POINTS = 20;
+
+    const modalRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (modalRef.current && !modalRef.current.contains(event.target)) {
+                handleCloseChart();
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        }
+    },[]);
 
     useEffect(() => {
         socket.on("connect", () => {
@@ -75,7 +45,6 @@ export default function Chart(props) {
             console.log('Received data from server', data);
             setChartData((prevData) => {
                 const newData = [...prevData, data];
-
                 if (newData.length > MAX_DATA_POINTS) {
                     newData.shift(); 
                 }
@@ -83,17 +52,14 @@ export default function Chart(props) {
                 return newData;
             });
         });
-
         return () => {
             socket.off();
         };
 
     }, []);
-
-    console.log(data);
     
     return (
-        <div className="chart bg-white rounded-md w-[600px] h-[400px] relative">
+        <div ref={modalRef} className="chart bg-white rounded-md w-[700px] h-[500px] relative">
             <IconClose 
                 className='absolute top-2 right-2 cursor-pointer icon-close'
                 onClick={handleCloseChart}
@@ -124,7 +90,7 @@ export default function Chart(props) {
                     }}
                 >
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
+                    <XAxis dataKey="day" />
                     <YAxis />
                     <Tooltip />
                     <Legend />
