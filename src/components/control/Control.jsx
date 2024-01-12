@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client'
+import axios from 'axios';
+import moment from 'moment';
+import { Table } from 'antd';
 
 import Relay from './Relay';
 import ModalInfo from './ModalInfo';
 
 import { ReactComponent as IconControl } from '../../assets/iconControl.svg';
-import { Table } from 'antd';
 
 import "./Control.css";
-import moment from 'moment';
-import axios from 'axios';
 
 const socket = io("localhost:5000/", {
     transports: ["websocket"],
@@ -78,6 +78,8 @@ const Control = () => {
             state: false,
             value: 20,
         },
+        currId: '',
+        isVisibleModalInfo: false,
     });
 
 // New Update
@@ -110,36 +112,36 @@ const Control = () => {
     };
 
     const handleModalInfo = async (index) => {  
-        setModal(prev => ({...prev, ID: index}));
-        if(isShowModalInfo === true)
-        {
+        if(isShowModalInfo === true) {
             try {
                 const response = await axios.get(`http://localhost:5000/api/condition/getcondition`);
                 console.log("response data: ", response.data);
-              } catch (error) {
+            } catch (error) {
                 console.log(error);
-              }
+            }
         }
-        setisShowModalInfo(!isShowModalInfo);
+        setState(prev => ({...prev, currId: index, isVisibleModalInfo: !prev.isVisibleModalInfo}));
     };
     
     const handleSaveCondition = async () => {
         try {
-            const response = await axios.post(`http://localhost:5000/api/condition/store`,modal);
-            console.log(response.data);
-          } catch (error) {
-            console.log(error);
-          }
-          console.log({ID:modal.ID,state});
-          console.log(modal.ID);
-          handleModalInfo();
-        
-    }
+            const { tempState, soilState, waterState, currId } = state;
 
-    // const handleModalInfo = (index) => {
-    //     setModalInfo(prev => ({...prev, isShowModalInfo: !prev.isShowModalInfo}));
-    //     console.log(index)
-    // };
+            const data = {
+                ID: currId,
+                tempState: tempState,
+                soilState: soilState,
+                waterState: waterState,
+            };
+
+            const response = await axios.post(`http://localhost:5000/api/condition/store`,data);
+            console.log(response.data);
+        } catch (error) {
+            console.log(error);
+        }
+
+        handleModalInfo();
+    }
 
 
     const handleModalChange = (type, isState, value) => {
@@ -148,7 +150,6 @@ const Control = () => {
         } else {
             setState(prev => ({...prev, [type]: {value: Number(value), state: prev[type].state}}));
         }
-        setModal(prev => ({...prev, data: state}));
     };
 
     return (
@@ -170,16 +171,16 @@ const Control = () => {
                         </div>
                     )
                 })}
-                {isShowModalInfo && (
-                                <ModalInfo
-                                    handleModalInfo={handleModalInfo}
-                                    handleModalChange={handleModalChange}
-                                    tempState={state.tempState}
-                                    waterState={state.waterState}
-                                    soilState={state.soilState}
-                                    handleSaveCondition={handleSaveCondition}
-                                />
-                            )}
+                {state.isVisibleModalInfo && (
+                    <ModalInfo
+                        handleModalInfo={handleModalInfo}
+                        handleModalChange={handleModalChange}
+                        tempState={state.tempState}
+                        waterState={state.waterState}
+                        soilState={state.soilState}
+                        handleSaveCondition={handleSaveCondition}
+                    />
+                )}
                 <div className='w-full flex flex-col mt-4'>
                     {/* <div className='mb-4'>History: </div> */}
                     <div className='w-full flex'>
