@@ -47,6 +47,21 @@ const Control = () => {
         { title: 'Relay 3', status: false, id: 2},
     ];
 
+    const [modal, setModal] = useState({
+        ID: "",
+        tempState: {
+            state: true,
+            value: 25,
+        },
+        soilState: {
+            state: false,
+            value: 20,
+        },
+        waterState: {
+            state: false,
+            value: 20,
+        },
+    })
     const [relay, setRelay] = useState(relayData);
     const [isShowModalInfo, setisShowModalInfo] = useState(false);
     const [relayHistory, setRelayHistory] = useState([]);
@@ -94,20 +109,29 @@ const Control = () => {
         //socket.emit('status_Relay', index);
     };
 
-    const handleModalInfo = (index) => {  
-        
+    const handleModalInfo = async (index) => {  
+        setModal(prev => ({...prev, ID: index}));
+        if(isShowModalInfo === true)
+        {
+            try {
+                const response = await axios.get(`http://localhost:5000/api/condition/getcondition`);
+                console.log("response data: ", response.data);
+              } catch (error) {
+                console.log(error);
+              }
+        }
         setisShowModalInfo(!isShowModalInfo);
     };
     
-    const handleSaveCondition = async (index) => {
-    
+    const handleSaveCondition = async () => {
         try {
-            const response = await axios.post(`http://localhost:5000/api/condition/store`, state);
+            const response = await axios.post(`http://localhost:5000/api/condition/store`,modal);
             console.log(response.data);
           } catch (error) {
             console.log(error);
           }
-          console.log(state);
+          console.log({ID:modal.ID,state});
+          console.log(modal.ID);
           handleModalInfo();
         
     }
@@ -117,12 +141,14 @@ const Control = () => {
     //     console.log(index)
     // };
 
+
     const handleModalChange = (type, isState, value) => {
         if (isState) {
             setState(prev => ({...prev, [type]: {value: prev[type].value, state: !prev[type].state}}));
         } else {
             setState(prev => ({...prev, [type]: {value: Number(value), state: prev[type].state}}));
         }
+        setModal(prev => ({...prev, data: state}));
     };
 
     return (
@@ -141,20 +167,19 @@ const Control = () => {
                     return (
                         <div className='py-1 px-4' key={`relay-${index}`}>
                             <Relay data={item} index = {index} handleChangeStatus={() => handleChangeStatus(index)} handleModalInfo={handleModalInfo}/>
-                            {isShowModalInfo && (
+                        </div>
+                    )
+                })}
+                {isShowModalInfo && (
                                 <ModalInfo
                                     handleModalInfo={handleModalInfo}
                                     handleModalChange={handleModalChange}
-                                    index={index}
                                     tempState={state.tempState}
                                     waterState={state.waterState}
                                     soilState={state.soilState}
                                     handleSaveCondition={handleSaveCondition}
                                 />
                             )}
-                        </div>
-                    )
-                })}
                 <div className='w-full flex flex-col mt-4'>
                     {/* <div className='mb-4'>History: </div> */}
                     <div className='w-full flex'>

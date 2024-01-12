@@ -45,7 +45,7 @@ const socket = io("localhost:5000/", {
             { name: 'day 2', Temparature: 21, Humidity: 23, Soil: 45 },
             { name: 'day 3', Temparature: 12, Humidity: 54, Soil: 65 },
             { name: 'day 4', Temparature: 14, Humidity: 34, Soil: 45 },
-            { name: 'day 5', Temparature: 15, Humidity: 65, Soil: 34 },
+            { name: 'day 5', Temparature: 15, Humid2ity: 65, Soil: 34 },
             { name: 'day 6', Temparature: 18, Humidity: 34, Soil: 23 },
             { name: 'day 7', Temparature: 12, Humidity: 34, Soil: 12 },
         ]
