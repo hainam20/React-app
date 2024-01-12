@@ -116,7 +116,7 @@ export default function Home() {
     return (
         <div className='home bg-[rgb(245,246,250)] w-full h-full flex'>
             <div className='h-full overflow-y-auto no-scrollbar p-5 w-[50%]'>
-                {dummyData?.map((item, index) => {
+                {testData?.map((item, index) => {
                     return (
                         <div className="mb-3 device" key={index}>
                             <Device data={item} index={index} handleVisibleChart={handleVisibleChart}/>

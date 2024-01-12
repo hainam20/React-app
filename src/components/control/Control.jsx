@@ -8,8 +8,8 @@ import { ReactComponent as IconControl } from '../../assets/iconControl.svg';
 import { Table } from 'antd';
 
 import "./Control.css";
-import { ConsoleSqlOutlined } from '@ant-design/icons';
-import { IndeterminateCheckBoxOutlined } from '@mui/icons-material';
+import moment from 'moment';
+import axios from 'axios';
 
 const socket = io("localhost:5000/", {
     transports: ["websocket"],
@@ -20,15 +20,21 @@ const socket = io("localhost:5000/", {
 
 const columns = [
     {
-        title: 'Time',
-        dataIndex: 'time',
-        key: 'time',
-        render: (text) => <a>{text}</a>,
+        title: 'Relay',
+        dataIndex: 'ID',
+        key: 'ID',
     },
     {
         title: 'Status',
         dataIndex: 'status',
         key: 'status',
+        render: (text) => <a>{text === true ? "On" : "OFF"}</a>
+    },
+    {
+        title: 'Time',
+        dataIndex: 'createdAt',
+        key: 'createdAt',
+        render: (text) => <a>{moment(text).format('h:mm a, MMMM Do YYYY')}</a>,
     },
 ];
 
@@ -41,34 +47,38 @@ const Control = () => {
         { title: 'Relay 3', status: false, id: 2},
     ];
 
-    const initialmodalInfo = [
-        { id: 0, isShowModalInfo: false, card1: { value1: 25, toggle1: false }, card2: {value2: 20, toggle2: false}, card3: {value3: 20, toggle3: false} },
-        { id: 1, isShowModalInfo: false, card1: { value1: 25, toggle1: false }, card2: {value2: 25, toggle2: false}, card3: {value3: 20, toggle3: false} },
-        { id: 2, isShowModalInfo: false, card1: { value1: 25, toggle1: false }, card2: {value2: 20, toggle2: false}, card3: {value3: 20, toggle3: false} }
-    ];
     const [relay, setRelay] = useState(relayData);
-    const [modalInfo, setModalInfo] = useState(initialmodalInfo);
-    // const [state, setState] = useState([{
-    //     isChecked: false,
-    //     relay: 0,
-    //     isShowModalInfo: false,
-    // }]);
+    const [isShowModalInfo, setisShowModalInfo] = useState(false);
+    const [relayHistory, setRelayHistory] = useState([]);
+    const [state, setState] = useState({
+        tempState: {
+            state: true,
+            value: 25,
+        },
+        soilState: {
+            state: false,
+            value: 20,
+        },
+        waterState: {
+            state: false,
+            value: 20,
+        },
+    });
 
-    // const [relay, setRelay] = useState({
-    //     isChecked: false,
-    // })
 // New Update
     useEffect(() => {
         relay.forEach((relayItem) => {
-            // Check if the status of the relay has changed
             if (relayItem.status !== relayItem.prevStatus) {
-                socket.emit('status_Relay', { "relay": relayItem.id, "status": relayItem.status });
-                // Update the previous status to the current status
+                socket.emit('status_Relay', { "ID": relayItem.id, "status": relayItem.status });
                 relayItem.prevStatus = relayItem.status;
             }
         });
     }, [relay]);
-
+    useEffect((() => {
+        socket.on('relay_data', (data) => {
+            setRelayHistory(data);
+        });
+    }))
     const handleChangeStatus = (index) => {
         const updatedRelay  = relay.map(obj => {
             try {
@@ -84,29 +94,36 @@ const Control = () => {
         //socket.emit('status_Relay', index);
     };
 
-    const handleModalInfo = (index) => {
-        const updatedModalInfo = modalInfo.map(obj => {
-            try {
-                if (obj.id === index){
-                    return {...obj, isShowModalInfo : !modalInfo[index].isShowModalInfo}
-                    
-                }
-                return obj;
-            } catch (error) {
-                console.log(error);
-            }
-        })
-        setModalInfo(updatedModalInfo);
+    const handleModalInfo = (index) => {  
+        
+        setisShowModalInfo(!isShowModalInfo);
     };
     
-
+    const handleSaveCondition = async (index) => {
+    
+        try {
+            const response = await axios.post(`http://localhost:5000/api/condition/store`, state);
+            console.log(response.data);
+          } catch (error) {
+            console.log(error);
+          }
+          console.log(state);
+          handleModalInfo();
+        
+    }
 
     // const handleModalInfo = (index) => {
     //     setModalInfo(prev => ({...prev, isShowModalInfo: !prev.isShowModalInfo}));
     //     console.log(index)
     // };
 
-    console.log(modalInfo);
+    const handleModalChange = (type, isState, value) => {
+        if (isState) {
+            setState(prev => ({...prev, [type]: {value: prev[type].value, state: !prev[type].state}}));
+        } else {
+            setState(prev => ({...prev, [type]: {value: Number(value), state: prev[type].state}}));
+        }
+    };
 
     return (
         <>
@@ -124,8 +141,16 @@ const Control = () => {
                     return (
                         <div className='py-1 px-4' key={`relay-${index}`}>
                             <Relay data={item} index = {index} handleChangeStatus={() => handleChangeStatus(index)} handleModalInfo={handleModalInfo}/>
-                            {modalInfo[index].isShowModalInfo && (
-                                <ModalInfo handleModalInfo={handleModalInfo} modalInfo={modalInfo} setModalInfo={setModalInfo} index={index}/>
+                            {isShowModalInfo && (
+                                <ModalInfo
+                                    handleModalInfo={handleModalInfo}
+                                    handleModalChange={handleModalChange}
+                                    index={index}
+                                    tempState={state.tempState}
+                                    waterState={state.waterState}
+                                    soilState={state.soilState}
+                                    handleSaveCondition={handleSaveCondition}
+                                />
                             )}
                         </div>
                     )
@@ -135,7 +160,7 @@ const Control = () => {
                     <div className='w-full flex'>
                         {/* <Empty /> */}
                         <Table 
-                            // dataSource={data?.history} 
+                            dataSource={relayHistory} 
                             columns={columns} 
                             pagination={false}
                             className='w-full'
