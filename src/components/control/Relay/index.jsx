@@ -26,7 +26,7 @@ const Relay = (props) => {
                 <IconDevice className="transform scale-75 mr-2"/>
                 <div className="flex flex-col">
                     <div className="text-white font-medium tracking-wider">{data.title}</div>
-                    <div className="text-white opacity-50">{data.status ? 'Connected' : 'Disconnected'}</div>
+                    <div className="text-white opacity-50">{data.status ? 'Relay is ON' : 'Relay is OFF'}</div>
                 </div>
             </div>
             <div className="h-full flex items-center">

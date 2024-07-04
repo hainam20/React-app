@@ -23,6 +23,7 @@ const columns = [
         title: 'Relay',
         dataIndex: 'ID',
         key: 'ID',
+        render: (text) => <a>{text + 1}</a>,
     },
     {
         title: 'Status',
@@ -40,30 +41,26 @@ const columns = [
 
 
 const Control = () => {
+    const [relay, setRelay] = useState([]);
+    useEffect(() =>{
+        const fetchControls = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/api/control/relay');
+                const updatedRelay = response.data.data.map(item => ({
+                    ...item,
+                    title: `Relay ${item.ID + 1}` 
+                }));
+                setRelay(updatedRelay);
+                console.log(updatedRelay);
+            } catch (error) {
+                console.log(error);
+            }
+        };
 
-    const relayData = [
-        { title: 'Relay 1', status: false, id: 0},
-        { title: 'Relay 2', status: false, id: 1},
-        { title: 'Relay 3', status: false, id: 2},
-    ];
+        fetchControls();
+    }, []);
 
-    const [modal, setModal] = useState({
-        ID: "",
-        tempState: {
-            state: true,
-            value: 25,
-        },
-        soilState: {
-            state: false,
-            value: 20,
-        },
-        waterState: {
-            state: false,
-            value: 20,
-        },
-    })
-    const [relay, setRelay] = useState(relayData);
-    const [isShowModalInfo, setisShowModalInfo] = useState(false);
+
     const [relayHistory, setRelayHistory] = useState([]);
     const [state, setState] = useState({
         tempState: {
@@ -78,28 +75,68 @@ const Control = () => {
             state: false,
             value: 20,
         },
+
+        waterTimeState: {
+            state: false,
+            startDate: '',
+            endDate: '',
+        },
         currId: '',
         isVisibleModalInfo: false,
+        mode: 'Manual',
     });
 
 // New Update
     useEffect(() => {
+        
         relay.forEach((relayItem) => {
             if (relayItem.status !== relayItem.prevStatus) {
-                socket.emit('status_Relay', { "ID": relayItem.id, "status": relayItem.status });
+                socket.emit('status_Relay', { "ID": relayItem.ID, "status": relayItem.status });
                 relayItem.prevStatus = relayItem.status;
             }
         });
     }, [relay]);
+
+    useEffect(() => {
+        const visibleModalData = async () => {
+            if(state.isVisibleModalInfo === true) {
+                try {
+                    const response = await axios.get(`http://localhost:5000/api/condition/getcondition/${state.currId}`);
+                    const { tempState, soilState, waterState, ID, mode, waterTimeState } = response.data.response[0];
+                    if(state.currId === ID)
+                    {
+                        setState(prev => ({...prev, tempState: tempState,soilState: soilState, 
+                                            waterState: waterState, mode: mode, waterTimeState: waterTimeState})); 
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        }
+        visibleModalData();
+    }, [state.isVisibleModalInfo]);
     useEffect((() => {
         socket.on('relay_data', (data) => {
             setRelayHistory(data);
         });
     }))
+    useEffect((() => {
+        socket.on('relay', (data) => {
+        const { id, newRelayValue } = data;
+        updateRelayValue(id,newRelayValue );
+    });
+    }),)
+    const updateRelayValue = (id, newRelayValue) => {
+        setRelay(prevObjects =>
+          prevObjects.map(obj =>
+            obj.ID === id ? { ...obj, relay: newRelayValue } : obj
+          )
+        );
+      };
     const handleChangeStatus = (index) => {
         const updatedRelay  = relay.map(obj => {
             try {
-                if (obj.id === index){
+                if (obj.ID === index){
                     return {...obj, status: !relay[index].status}
                 }
                 return obj;              
@@ -111,29 +148,28 @@ const Control = () => {
         //socket.emit('status_Relay', index);
     };
 
-    const handleModalInfo = async (index) => {  
-        if(isShowModalInfo === true) {
-            try {
-                const response = await axios.get(`http://localhost:5000/api/condition/getcondition`);
-                console.log("response data: ", response.data);
-            } catch (error) {
-                console.log(error);
-            }
-        }
-        setState(prev => ({...prev, currId: index, isVisibleModalInfo: !prev.isVisibleModalInfo}));
+ 
+    const handleModalInfo = async (index) => { 
+        setState(prev => ({...prev, currId: index,isVisibleModalInfo: !prev.isVisibleModalInfo}));
     };
-    
+
+    const handleModeChange = async (selectedMode) => { 
+        setState(prev => ({...prev, mode: selectedMode}));
+    };
+
     const handleSaveCondition = async () => {
         try {
-            const { tempState, soilState, waterState, currId } = state;
+            const { tempState, soilState, waterState, currId, mode, waterTimeState } = state;
 
             const data = {
                 ID: currId,
                 tempState: tempState,
                 soilState: soilState,
                 waterState: waterState,
+                mode: mode,
+                waterTimeState: waterTimeState,
             };
-
+            console.log(data);
             const response = await axios.post(`http://localhost:5000/api/condition/store`,data);
             console.log(response.data);
         } catch (error) {
@@ -151,6 +187,22 @@ const Control = () => {
             setState(prev => ({...prev, [type]: {value: Number(value), state: prev[type].state}}));
         }
     };
+    
+    const handleChangeWaterTime = (dateString) => {
+        setState((prevState) => ({
+            ...prevState,
+            waterTimeState: {
+                ...prevState.waterTimeState,
+                state: !prevState.waterTimeState.state, // Toggle checkbox state
+                startDate: dateString[0] || prevState.waterTimeState.startDate, // Update startDate if available
+                endDate: dateString[1] || prevState.waterTimeState.endDate, // Update endDate if available
+            },
+        }));
+    };
+
+    // useEffect(() => {
+    //     console.log(state.waterTimeState);
+    // },[state.waterTimeState])
 
     return (
         <>
@@ -173,12 +225,16 @@ const Control = () => {
                 })}
                 {state.isVisibleModalInfo && (
                     <ModalInfo
-                        handleModalInfo={handleModalInfo}
-                        handleModalChange={handleModalChange}
                         tempState={state.tempState}
                         waterState={state.waterState}
                         soilState={state.soilState}
+                        waterTimeState={state.waterTimeState}
+                        mode={state.mode}
+                        handleModalInfo={handleModalInfo}
+                        handleModalChange={handleModalChange}
+                        handleModeChange={handleModeChange}
                         handleSaveCondition={handleSaveCondition}
+                        handleChangeWaterTime={handleChangeWaterTime}
                     />
                 )}
                 <div className='w-full flex flex-col mt-4'>

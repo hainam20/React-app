@@ -57,9 +57,9 @@ export default function Chart(props) {
         };
 
     }, []);
-    
+ 
     return (
-        <div ref={modalRef} className="chart bg-white rounded-md w-[700px] h-[500px] relative">
+        <div ref={modalRef} className="chart bg-white rounded-md w-[800px] h-[500px] relative">
             <IconClose 
                 className='absolute top-2 right-2 cursor-pointer icon-close'
                 onClick={handleCloseChart}
@@ -79,8 +79,8 @@ export default function Chart(props) {
             </ResponsiveContainer> */}
             <ResponsiveContainer width='100%' height='85%'>
                 <LineChart
-                    width={500}
-                    height={300}
+                    width={700}
+                    height={500}
                     data={data}
                     margin={{
                         top: 5,
@@ -94,7 +94,7 @@ export default function Chart(props) {
                     <YAxis />
                     <Tooltip />
                     <Legend />
-                    <Line type="monotone" dataKey="Temparature" stroke="#8884d8" activeDot={{ r: 8 }} />
+                    <Line type="monotone" dataKey="Temperature" stroke="#8884d8" />
                     <Line type="monotone" dataKey="Humidity" stroke="#82ca9d" />
                     <Line type="monotone" dataKey="Soil" stroke="#2da7e4" />
                 </LineChart>
